@@ -1,12 +1,7 @@
-#!flask/bin/python
-# from flask import Flask
 from flask import Flask, render_template, request
 from flask_mysqldb import MySQL
 from skimage import io
 from os import listdir
-from werkzeug import secure_filename
-
-import os
 
 import numpy as np
 import cv2
@@ -22,17 +17,10 @@ from helper.kernel import kernel
 import pandas as pd
 
 from flask import Flask, jsonify
-from sklearn.neighbors import KNeighborsClassifier
-import pickle
-
 
 app = Flask(__name__)
 
-PROJECT_HOME = os.path.dirname(os.path.realpath(__file__))
-UPLOAD_FOLDER = '{}/Uploads/'.format(PROJECT_HOME)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-@app.route("/api/feature-extraction-tembakau",methods=['POST'])
+@app.route("/todo-api/feature-extraction-tembakau",methods=['POST'])
 def featureDetectionTembakau():
 	app.logger.info(app.config['UPLOAD_FOLDER'])
 	img = request.files['image']
@@ -46,9 +34,9 @@ def featureDetectionTembakau():
 	cv2.imwrite(saved_path,resize)
 
 	img = cv2.imread(saved_path)
-	filters = kernel.getKernelTembakau()
+	filters = kernel.getKernelTembakau()#119
 	res1 = kernel.gaborFiltering(img, filters)
-	mean = kernel.getMean(res1)/99.57
+	mean = kernel.getMean(res1)/112.05
 	stDev = kernel.getSDeviate(res1)/112.81
 	median = kernel.getMedian(res1)/94
 
@@ -56,11 +44,10 @@ def featureDetectionTembakau():
 	training=Db.selectDataTembakau()
 	dataTrain = []
 	for datum in training:    
-	    dataTrain.append([datum.getStDeviasi(),datum.getR(),datum.getMedian(),datum.getLabel()])
+	    dataTrain.append([datum.getStDeviasi(),datum.getMean(),datum.getMedian(),datum.getLabel()])
 	dataTrain_df = pd.DataFrame(dataTrain,columns=["st_dev", "r", "median","label"]) 
 	trainX = dataTrain_df[["st_dev","r","median"]]
 	trainY = dataTrain_df["label"]
-
 	#data testing
 	dataTest = []
 	dataTest.append([stDev,mean,median,-1])
@@ -84,14 +71,6 @@ def featureDetectionTembakau():
 	return jsonify(
 		hasil_prediksi = predicting[0]
     )
-
-
-def create_new_folder(local_dir):
-    newpath = local_dir
-    if not os.path.exists(newpath):
-        os.makedirs(newpath)
-    return newpath
-    
 
 if __name__ == '__main__':
     app.run(debug=True)

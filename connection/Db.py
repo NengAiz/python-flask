@@ -17,11 +17,11 @@ class Db:
 		conn.commit()
 		conn.close()
 
-	def selectData(label):
+	def selectDataTembakau():
 		conn = Db.getConnection()
 		myCursor = conn.cursor()
-		sql = 'SELECT * from tembakau_tb WHERE label=%s'
-		myCursor.execute(sql,label) 
+		sql = 'SELECT * from tembakau_tb'
+		myCursor.execute(sql) 
 		result = myCursor.fetchall()
 		conn.commit()
 		conn.close()

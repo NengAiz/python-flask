@@ -9,7 +9,7 @@ class kernel:
     def frequency_to_lamda(x):
         return (1/x)
     
-    def getKernel():
+    def getKernelTembakau():
         filters = []
         ksize = 49 
         scale  = [kernel.frequency_to_lamda(10),kernel.frequency_to_lamda(13),kernel.frequency_to_lamda(15),kernel.frequency_to_lamda(18),kernel.frequency_to_lamda(20),kernel.frequency_to_lamda(21),kernel.frequency_to_lamda(23),kernel.frequency_to_lamda(24)]
@@ -22,6 +22,8 @@ class kernel:
                 filters.append(kern)
         return filters
     
+ 
+
 #     def getKernelGabor(imgs, img):
 #         filters = []
 #         ksize = 49 
